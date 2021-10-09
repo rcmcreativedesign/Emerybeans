@@ -1,0 +1,7 @@
+.wrapper { min-width: 300px; padding: 20px; margin: auto;}
+.timestamp { font-style: italic; font-size: small; }
+.caption { font-weight: bold;}
+/* .button-icon { cursor: pointer; }
+.edit-icon { cursor: pointer; } */
+.hidden { display: none; }
+.entry { margin-bottom: 15px; }
