@@ -1,21 +1,13 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
-
-require 'PHPMailer/Exception.php';
-require 'PHPMailer/PHPMailer.php';
-require 'PHPMailer/SMTP.php';
-
 require_once '_authorized.php';
-require_once "classes/Database.php";
-require_once "classes/User.php";
+require_once "classes".DIRECTORY_SEPARATOR."Database.php";
+require_once "classes".DIRECTORY_SEPARATOR."User.php";
+require_once "classes".DIRECTORY_SEPARATOR."Mailer.php";
 
 $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
-
-$link = $db;
+$mailer = new Mailer($db);
 
 $emailaddress = $emailaddress_err = $password = $notification_success = $notification_failure = '';
 
@@ -38,47 +30,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = $user->generatePassword();
         $user->createUser($emailaddress, $password);
     }
-    $link->close();
 
     if(empty($emailaddress_err) && !empty($password) && empty($notification_failure)) {
-        // Send invite email
-        $mail = new PHPMailer(true);
-        try {
-            $mail->SMTPDebug = SMTP::DEBUG_OFF;
-            $mail->isSMTP();
-            $mail->Host = '';
-            $mail->SMTPAuth = true;
-            $mail->Username = '';
-            $mail->Password = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
-
-            $mail->setFrom('', '');
-            $mail->addAddress($emailaddress);
-
-            $mail->isHTML(true);
-            $mail->Subject = 'Invite to Emerybeans';
-            $mail->Body = '<html>'
-                . '<head>'
-                . '<title>Emerybeans Invite</title>'
-                . '</head>'
-                . '<body>'
-                . '<h2>You are invited to join Emerybeans.</h2>'
-                . '<p>Emerybeans is like that site with a similar name, but it\'s built by me, and free for me to use. It\'s still a work in '
-                . 'progress, but it\'s working well enough to start inviting family to join.</p>'
-                . '<p>You can log into the website using your email address and the provided password:</p>'
-                . '<p><a href="http://emerybeans.epizy.com/">http://emerybeans.epizy.com</a></p>'
-                . '<p>Password: ' . $password . '</p>'
-                . '</body>'
-                . '</html>';
-            
-            $mail->send();
+        if ($mailer->sendInvite($emailaddress, $password)) {
             $notification_success = "Invite sent successfully!";
-        } catch (Exception $e) {
-            $notification_failure = "Invite failed to send. Mailer Error: {$mail->ErrorInfo}";
+        } else {
+            $notification_failure = "Invite failed to send. Mailer Error: {$mailer->errorMessage}";
         }
     }
 }
+$db->close();
+
 ?>
 
 <!DOCTYPE html>
