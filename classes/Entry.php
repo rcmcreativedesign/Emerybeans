@@ -90,7 +90,7 @@ class Entry {
 
     public function getLikedList() {
         $likedresults = array();
-        $userlikes_query = "SELECT CONCAT(CASE WHEN u.displayName IS NULL THEN u.emailAddress ELSE u.displayName END, ' liked this') AS liked FROM `user` AS u LEFT JOIN `entrylike` AS el ON u.id = el.userId WHERE el.entryId = ?";
+        $userlikes_query = "SELECT CONCAT(CASE WHEN u.displayName IS NULL OR u.displayMame = '' THEN u.emailAddress ELSE u.displayName END, ' liked this') AS liked FROM `user` AS u LEFT JOIN `entrylike` AS el ON u.id = el.userId WHERE el.entryId = ?";
         if ($stmt = $this->conn->prepare($userlikes_query)) {
             $stmt->bind_param("i", $this->id);
             if ($stmt->execute()) {
