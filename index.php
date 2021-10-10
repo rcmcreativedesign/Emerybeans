@@ -13,7 +13,7 @@
     include_once 'classes/UserPreferance.php';
 
     $userPrefs = new UserPreferance($db);
-    $page_size = $userPrefs->PageSize;
+    $page_size = 2; //$userPrefs->PageSize;
 
     $entry_count = getEntryCount($link);
     $num_pages = ceil($entry_count / $page_size);
@@ -74,7 +74,7 @@
                     <?php 
                     $i = 1;
                     while($i <= $num_pages && $i <= $num_pages) {
-                        echo "<li class=\"page-item" . ($i == $current_page ? " active" : "") . "\"><a class=\"page-link\" href=\"#\" data-page=\"{$i}\">{$i}</a></li>";
+                        echo "<li class=\"page-item" . ($i == $current_page ? " active" : "") . "\"><a class=\"page-link\" href=\"#\" data-page=\"{$i}\">{$i}</a></li>\n";
                         $i++;
                     }?>
                     <li class="page-item disabled">
@@ -89,6 +89,8 @@
 
         <script type="text/javascript">
             var currPage = <?php echo $current_page;?>;
+            var totalPages = <?php echo $num_pages;?>;
+
             $(function () {
                 getEntriesForPage(currPage);
                 
@@ -118,9 +120,25 @@
 
                 $(".wrapper").on("click", ".page-link", function (e) {
                     e.preventDefault();
-                    var page = $(e.currentTarget).data("page");
-                    if (page) {
+                    var $ct = $(e.currentTarget);
+                    var page = $ct.data("page");
+                    if (page && page != currPage) {
+                        setCurrentPage(page);
                         getEntriesForPage(page);
+                    }
+                    else if ($ct.attr('id') == 'previous-page') {
+                        if (!$ct.parent().hasClass('disabled')) {
+                            currPage--;
+                            setCurrentPage(currPage);
+                            getEntriesForPage(currPage);
+                        }
+                    }
+                    else if ($ct.attr('id') == 'next-page') {
+                        if (!$ct.parent().hasClass('disabled')) {
+                            currPage++;
+                            setCurrentPage(currPage);
+                            getEntriesForPage(currPage);
+                        }
                     }
                 });
 
@@ -149,6 +167,28 @@
                         for (var i = 0;i < dataArray.length; i++) {
                             $("#entries").append("<div class=\"entry\" data-id=\"" + dataArray[i] + "\"></div>");
                         }
+
+                        // Update paging
+                        if (pagenumber == 1) {
+                            pagingBack(true);
+                            if (totalPages == 1)
+                                pagingFoward(true);
+                            else
+                                pagingFoward(false);
+                        }
+                        else if (pagenumber == totalPages) {
+                            pagingFoward(true);
+                            if (totalPages == 1)
+                                pagingBack(true);
+                            else
+                                pagingBack(false);
+                        }
+                        else {
+                            pagingFoward(false);
+                            pagingBack(false);
+                        }
+                        currPage = pagenumber;
+
                         $(".entry").each(function (index) {
                             var that = this;
                             var entryId = $(that).data("id");
@@ -178,12 +218,28 @@
             }
 
             function pagingBack(disable) {
-                //if (disable) {}
+                if (disable) {
+                    $('#previous-page').parent().addClass('disabled');
+                }
+                else {
+                    $('#previous-page').parent().removeClass('disabled');
+                }
                 
             }
 
             function pagingFoward(disable) {
+                if (disable) {
+                    $('#next-page').parent().addClass('disabled');
+                }
+                else {
+                    $('#next-page').parent().removeClass('disabled');
+                }
 
+            }
+
+            function setCurrentPage(page) {
+                $('.page-item').removeClass('active');
+                $('.page-link[data-page="' + page + '"]').parent().addClass('active');
             }
         </script>
         <?php } ?>
