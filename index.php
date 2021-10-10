@@ -13,7 +13,7 @@
     include_once 'classes/UserPreferance.php';
 
     $userPrefs = new UserPreferance($db);
-    $page_size = 2; //$userPrefs->PageSize;
+    $page_size = $userPrefs->PageSize;
 
     $entry_count = getEntryCount($link);
     $num_pages = ceil($entry_count / $page_size);

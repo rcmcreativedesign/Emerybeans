@@ -9,7 +9,7 @@ $db = $database->getConnection();
 $user = new User($db);
 $mailer = new Mailer($db);
 
-$emailaddress = $emailaddress_err = $password = $notification_success = $notification_failure = '';
+$emailaddress = $emailaddress_err = $password = $displayname = $displayname_err = $notification_success = $notification_failure = '';
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty(trim($_POST["emailaddress"]))) {
@@ -20,18 +20,24 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         $emailaddress = strtolower(trim($_POST["emailaddress"]));
     }
     
+    if (empty(trim($_POST["displayname"]))) {
+        $displayname_err = "Please enter a name to display.";
+    } else {
+        $displayname = strtolower(trim($_POST["displayname"]));
+    }
+
     if(empty($emailaddress_err)) {
         if ($user->setUserByEmailAddress($emailaddress)) {
             $emailaddress_err = "e-Mail address is already registered.";
         }
     }
     
-    if (empty($emailaddress_err)) {
+    if (empty($emailaddress_err) && empty($displayname_err)) {
         $password = $user->generatePassword();
-        $user->createUser($emailaddress, $password);
+        $user->createUser($emailaddress, $password, $displayname);
     }
 
-    if(empty($emailaddress_err) && !empty($password) && empty($notification_failure)) {
+    if(empty($emailaddress_err) && empty($displayname_err) && !empty($password) && empty($notification_failure)) {
         if ($mailer->sendInvite($emailaddress, $password)) {
             $notification_success = "Invite sent successfully!";
         } else {
@@ -69,6 +75,10 @@ $db->close();
                     <div class="form-group">
                         <label>Enter e-Mail address:</label><br/>
                         <input type="text" name="emailaddress" value="<?php echo empty($emailaddress_err) ? "" : $emailaddress?>" />
+                    </div>
+                    <div class="form-group">
+                        <label>Enter name to display:</label><br/>
+                        <input type="text" name="displayname" value="<?php echo empty($displayname_err) ? "" : $displayname?>" />
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Send Invite" />

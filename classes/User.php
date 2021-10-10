@@ -17,8 +17,9 @@ class User {
         $this->conn = $db;
     }
 
-    public function createUser($emailaddress, $password) {
+    public function createUser($emailaddress, $password, $displayname) {
         $this->emailAddress = $emailaddress;
+        $this->displayName = $displayname;
         $this->hashSeed = $this->getGUID();
         $this->pwHash = $this->createPasswordHash($this->emailAddress, $password, $this->hashSeed);
 
