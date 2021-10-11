@@ -110,6 +110,25 @@ class User {
         return true;
     }
 
+    public function deleteUser() {
+        $sqlDeleteEntryView = "DELETE FROM entryview WHERE userId = ?;";
+        $sqlDeleteEntryLike = "DELETE FROM entrylike WHERE userId = ?;";
+        $sqlDeleteUser = "DELETE FROM user WHERE id = ?;";
+        if ($stmt = $this->conn->prepare($sql)) {
+            $stmt->bind_param("iii", $this->id, $this->id, $this->id);
+            if (!$stmt->execute()) {
+                echo "Failed to execute.".$this->conn->error;
+                $stmt->close();
+                return false;
+            } else {
+                $stmt->close();
+                return true;
+            }
+        }
+        echo "Failed to prepare".$this->conn->error;
+        return false;
+    }
+
     public function validatePassword($password) {
         $pwString = $this->emailAddress . $password . $this->hashSeed;
         if(sha1($pwString) == $this->pwHash)
