@@ -1,23 +1,26 @@
 <?php
     //@$result = include 'setup.php';
     require_once '_globals.php';
-    require_once "classes/Database.php";
-    require_once "classes/User.php";
-    
-    $database = new Database();
-    $db = $database->getConnection();
-    $user = new User($db);
-    
-    $link = $db;
-    
-    include_once 'classes/UserPreferance.php';
 
-    $userPrefs = new UserPreferance($db);
-    $page_size = $userPrefs->PageSize;
+    if ($loggedin) {
+        require_once "classes/Database.php";
+        require_once "classes/User.php";
+        
+        $database = new Database();
+        $db = $database->getConnection();
+        $user = new User($db);
+        
+        include_once 'classes/UserPreferance.php';
 
-    $entry_count = getEntryCount($link);
-    $num_pages = ceil($entry_count / $page_size);
-    $current_page = isset($_GET["page"]) ? $_GET["page"] : 1;
+        $userPrefs = new UserPreferance($db);
+        $page_size = $userPrefs->PageSize;
+
+        $entry_count = getEntryCount($db);
+        $num_pages = ceil($entry_count / $page_size);
+        $current_page = isset($_GET["page"]) ? $_GET["page"] : 1;
+
+        $db->close();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,7 +50,6 @@
                 You can &quot;like&quot; a picture by clicking the heart.<br/>
                 You can change your display name and password in Accounts.<br/>
                 You can click on a picture to see a bigger version, but it's not working right.<br/>
-                You can click on a page number at the bottom to go to another page, but it's also not working right.<br/>
                 Pictures you haven't seen yet have a red &quot;<span style="color: red;">new</span>&quot; next to them.
             </div>
             <div id="image-popup" class="modal" tabindex="-1">
