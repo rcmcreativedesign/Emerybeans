@@ -88,6 +88,30 @@ class Entry {
         return true;
     }
 
+    public function likeEntry($userId) {
+        $stmt = $this->conn->prepare("INSERT INTO entrylike (entryid, userid) VALUES (?, ?)");
+        $stmt->bind_param('ii', $this->id, $userId);
+        if ($stmt->execute()) {
+            $stmt->close();
+            return true;
+        } else {
+            $stmt->close();
+            return false;
+        }
+    }
+
+    public function hasLiked($userId) {
+        $stmt = $this->conn->prepare("SELECT COUNT(timestamp) AS checkCount FROM entrylike WHERE entryId = ? AND userId = ?");
+        $stmt->bind_param('ii', $this->id, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $count = $result->fetch_assoc();
+        $hasLiked = $count["checkCount"] > 0;
+        $stmt->close();
+
+        return $hasLiked;
+    }
+
     public function getLikedList() {
         $likedresults = array();
         $userlikes_query = "SELECT CONCAT(CASE WHEN u.displayName IS NULL OR u.displayMame = '' THEN u.emailAddress ELSE u.displayName END, ' liked this') AS liked FROM `user` AS u LEFT JOIN `entrylike` AS el ON u.id = el.userId WHERE el.entryId = ?";
