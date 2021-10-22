@@ -111,13 +111,10 @@ class User {
     }
 
     public function deleteUser() {
-        $sqlDeleteEntryView = "DELETE FROM entryview WHERE userId = ?;";
-        $sqlDeleteEntryLike = "DELETE FROM entrylike WHERE userId = ?;";
-        $sqlDeleteUser = "DELETE FROM user WHERE id = ?;";
-        if ($stmt = $this->conn->prepare($sql)) {
-            $stmt->bind_param("iii", $this->id, $this->id, $this->id);
+        $sqlDelete = "DELETE u, el, ev FROM user u LEFT JOIN entrylike el ON u.id = el.userId LEFT JOIN entryview ev on u.id = ev.userId where u.id = ?";
+        if ($stmt = $this->conn->prepare($sqlDelete)) {
+            $bind = $stmt->bind_param("i", $this->id);
             if (!$stmt->execute()) {
-                echo "Failed to execute.".$this->conn->error;
                 $stmt->close();
                 return false;
             } else {
@@ -125,7 +122,6 @@ class User {
                 return true;
             }
         }
-        echo "Failed to prepare".$this->conn->error;
         return false;
     }
 

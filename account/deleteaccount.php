@@ -6,18 +6,21 @@ require_once "../classes/User.php";
 $database = new Database();
 $db = $database->getConnection();
 $user = new User($db);
+$user->setUserById($_SESSION["id"]);
 
 $notification = "";
-if (!$user->deleteUser()) {
+$del_result = $user->deleteUser();
+
+if (!$del_result) {
     $notification = "Unable to delete account";
+} else {
+    $_SESSION = array();
+
+    session_destroy();
+    $loggedin = false;
 }
 
 $db->close();
-
-$_SESSION = array();
-
-session_destroy();
-$loggedin = false;
 
 ?>
 <!DOCTYPE html>
