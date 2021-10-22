@@ -64,6 +64,30 @@
                     </div>
                 </div>
             </div>
+            <div id="edit-popup" data-entryid="" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edit-popup-title" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="model-content">
+                        <div class="model-header">
+                            <h5 class="modal-title" id="edit-popup-title">Edit Caption</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="editcaption" class="col-form-label">Caption:</label>
+                                    <textarea id="edit-popup-caption"></textarea>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="entries"></div>
 
             <nav aria-label="Page navigation" class="<?php echo $num_pages > 1 ? "" : "hidden";?>">
@@ -116,8 +140,14 @@
 
                 $(".wrapper").on("click", ".edit-icon", function (e) {
                     e.preventDefault();
+                    var modal = $("#edit-popup");
+                    modal.data("entryId", $(this).data("entryId"));
+                    modal.modal("show");
+                });
+
+                $("edit-popup").on("show.bs.modal", function (event) {
                     var entryId = $(this).data("entryid");
-                    alert("edit - " + entryId);
+                    $("#edit-popup-caption").val(entryId);
                 });
 
                 $(".wrapper").on("click", ".page-link", function (e) {
