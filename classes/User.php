@@ -80,9 +80,9 @@ class User {
 
     public function saveUser() {
         if ($this->id === null) {
-            $sql = "INSERT INTO user (emailAddress, pwHash, hashSeed, enabled, inviteAuthorized) VALUES (?, ?, ?, 1, 0)";
+            $sql = "INSERT INTO user (emailAddress, displayName, pwHash, hashSeed, enabled, inviteAuthorized) VALUES (?, ?, ?, ?, 1, 0)";
             if ($stmt = $this->conn->prepare($sql)) {
-                $stmt->bind_param("sss", $this->emailAddress, $this->pwHash, $this->hashSeed);
+                $stmt->bind_param("ssss", $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed);
                 if ($stmt->execute()) {
                     $this->id = $this->conn->insert_id;
                 } else {
