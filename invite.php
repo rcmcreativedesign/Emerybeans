@@ -23,7 +23,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty(trim($_POST["displayname"]))) {
         $displayname_err = "Please enter a name to display.";
     } else {
-        $displayname = strtolower(trim($_POST["displayname"]));
+        $displayname = trim($_POST["displayname"]);
     }
 
     if(empty($emailaddress_err)) {
