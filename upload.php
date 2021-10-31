@@ -25,7 +25,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     header('location: index.php');
                     exit;            
                 } else {
-                    $upload_err = "File upload failed. Error message: " . $db->error();
+                    $upload_err = "File upload failed. Error message: ({$db->errno}) " . $db->error;
                 }
             } else {
                 $upload_err = "File upload failed. Please submit it again.";

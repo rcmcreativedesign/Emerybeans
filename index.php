@@ -47,22 +47,8 @@
             <?php } else { ?>
             <div class="alert alert-info">
                 <b>What's New:</b><br/>
-                You can &quot;like&quot; a picture by clicking the heart.<br/>
-                You can change your display name and password in Accounts.<br/>
-                You can click on a picture to see a bigger version, but it's not working right.<br/>
-                Pictures you haven't seen yet have a red &quot;<span style="color: red;">new</span>&quot; next to them.
-            </div>
-            <div id="image-popup" class="modal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <img src="" id="imagePopup"/>
-                        </div>
-                    </div>
-                </div>
+                You can delete your account in Account (but why would you want to do that?!?).<br/>
+                The pager at the bottom works correctly now.<br/>
             </div>
             <div id="entries"></div>
 
@@ -87,6 +73,43 @@
                 </ul>
             </nav>
             <?php include '_footer.php'; ?>
+        </div>
+
+        <div id="image-popup" class="modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="" id="imagePopup"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="edit-popup" data-entryid="" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edit-popup-title" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="model-content" style="background-color: white;">
+                    <div class="model-header">
+                        <h5 class="modal-title" id="edit-popup-title">Edit Caption</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="edit-popup-caption" class="col-form-label">Caption:</label>
+                                <textarea id="edit-popup-caption"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="edit-popup-save">Save Changes</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script type="text/javascript">
@@ -116,9 +139,24 @@
 
                 $(".wrapper").on("click", ".edit-icon", function (e) {
                     e.preventDefault();
-                    var entryId = $(this).data("entryid");
-                    alert("edit - " + entryId);
+                    var modal = $("#edit-popup");
+                    modal.data("entryId", $(e.currentTarget).data("entryid"));
+                    modal.data("caption", $(e.currentTarget).data("caption"));
+                    modal.modal({backdrop: "static"});
+                    modal.modal("show");
                 });
+
+                $("#edit-popup").on("show.bs.modal", function (event) {
+                    $("#edit-popup-caption").val($(this).data("caption"));
+                    $("#edit-popup-save").on("click", function () {
+                        $.post("updateentry.php", { id: $(this).data("entryId"), caption: $("#edit-popup-caption").val() });
+                        $("#edit-popup").modal("hide");
+                    });
+                });
+
+                $("#edit-popup").on("hide.bs.modal", function (event) {
+                    $("edit-popup-save").off();
+                })
 
                 $(".wrapper").on("click", ".page-link", function (e) {
                     e.preventDefault();
