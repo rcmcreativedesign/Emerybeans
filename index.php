@@ -137,6 +137,10 @@
                     }
                 });
 
+                $(".wrapper").on("click", ".delete-icon", function (e) {
+
+                });
+                
                 $(".wrapper").on("click", ".edit-icon", function (e) {
                     e.preventDefault();
                     var modal = $("#edit-popup");
