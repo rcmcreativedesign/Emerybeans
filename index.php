@@ -47,8 +47,7 @@
             <?php } else { ?>
             <div class="alert alert-info">
                 <b>What's New:</b><br/>
-                You can delete your account in Account (but why would you want to do that?!?).<br/>
-                The pager at the bottom works correctly now.<br/>
+                Clicking on an image now shows correctly in the pop-up.<br/>
             </div>
             <div id="entries"></div>
 
@@ -76,13 +75,13 @@
         </div>
 
         <div id="image-popup" class="modal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <img src="" id="imagePopup"/>
+                        <img src="" id="imagePopup" style="width: 100%;"/>
                     </div>
                 </div>
             </div>
