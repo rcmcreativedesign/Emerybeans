@@ -100,7 +100,7 @@ class Entry {
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("ii", $this->id, $userId);
         if ($stmt->execute()) {
-            $$stmt->close();
+            $stmt->close();
             return true;
         } else {
             $stmt->close();
