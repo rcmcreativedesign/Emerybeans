@@ -11,7 +11,7 @@ class Entry {
     public $imageType;
     public $type;
     public function uploadTimestampDisplay() {
-        return date_create($this->uploadTimestamp)->modify("-2 hours");
+        return ($this->uploadTimestamp) ? date_create($this->uploadTimestamp)->modify("-2 hours") : null;
     }
 
     public function __construct($db) {
@@ -146,6 +146,22 @@ class Entry {
         }
         return $likedresults;
     
+    }
+
+    public function getImage() {
+        $image = "";
+        $imageQuery = "SELECT imageBinary, type FROM entry WHERE id = ?";
+        if ($stmt = $this->conn->prepare($imageQuery)) {
+            $stmt->bind_param("i", $this->id);
+            if ($stmt->execute()) {
+                $result = $stmt->get_result();
+
+                $imageFetch = $result->fetch_assoc();
+                $image = $imageFetch["imageBinary"];
+            }
+            $stmt->close();
+        }
+        return $image;
     }
 }
 ?>

@@ -1,35 +1,19 @@
 <?php
 require_once '_authorizedpartial.php';
 require_once "classes/Database.php";
-require_once "classes/User.php";
+require_once "classes/Entry.php";
 
 $database = new Database();
 $db = $database->getConnection();
-$user = new User($db);
-
-$link = $db;
+$entry = new Entry($db);
 
 $entryId = $_GET['id'];
-$image = '';
-$query = 'SELECT imageBinary, type FROM entry WHERE id = ?';
+$entry->setEntryById($entryId);
 
-if ($stmt = mysqli_prepare($link, $query)) {
-    mysqli_stmt_bind_param($stmt, "i", $param_id);
+$image = $entry->getImage();
 
-    $param_id = $entryId;
+$db->close();
 
-    if (mysqli_stmt_execute($stmt)) {
-        mysqli_stmt_store_result($stmt);
-
-        if (mysqli_stmt_num_rows($stmt) == 1) {
-            mysqli_stmt_bind_result($stmt, $image, $imagetype);
-            mysqli_stmt_fetch($stmt);
-        }
-    }
-    mysqli_stmt_close($stmt);
-}
-
-mysqli_close($link);
-header('content-type:' . $imagetype);
+header('content-type:' . $entry->type);
 echo $image;
 ?>
