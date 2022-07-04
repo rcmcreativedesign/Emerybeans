@@ -88,6 +88,21 @@ class Entry {
         return true;
     }
 
+    public function deleteEntry() {
+        $sql = "DELETE entry WHERE id = ?";
+        if ($stmt = $this->conn->prepare($sql)) {
+            $stmt->bind_param("i", $this->$id);
+            if (!$stmt->execute()) {
+                $stmt->close();
+                return false;
+            }
+            $stmt->close();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
     public function setEntryLiked($userId) {
         return $this->setMeta("INSERT INTO entrylike (entryid, userid) VALUES (?, ?)", $userId);
     }
@@ -100,7 +115,7 @@ class Entry {
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("ii", $this->id, $userId);
         if ($stmt->execute()) {
-            $$stmt->close();
+            $stmt->close();
             return true;
         } else {
             $stmt->close();
