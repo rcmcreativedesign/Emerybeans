@@ -137,7 +137,19 @@
                 });
 
                 $(".wrapper").on("click", ".delete-icon", function (e) {
+                    e.preventDefault();
+                    var entryId = $(e.currentTarget).data("entryid");
+                    alert(entryId);
+                    bootbox.confirm("Are you certain you want to delete this entry?", function (result) {
+                        if (!result) return;
 
+                        $.post("deleteentry.php", { id: entryId }, function (data) {
+                            var response = JSON.parse(data);
+                            if (response.success) {
+
+                            }
+                        });
+                    });
                 });
                 
                 $(".wrapper").on("click", ".edit-icon", function (e) {
