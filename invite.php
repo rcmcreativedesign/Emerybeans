@@ -43,9 +43,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if(empty($emailaddress_err) && empty($displayname_err) && !empty($password) && empty($notification_failure)) {
         if ($mailer->sendInvite($emailaddress, $password)) {
-            $notification_success += "Invite sent successfully!";
+            $notification_success .= "Invite sent successfully!";
         } else {
-            $notification_failure += "Invite failed to send. Mailer Error: {$mailer->errorMessage}";
+            $notification_failure .= "Invite failed to send. Mailer Error: {$mailer->errorMessage}";
         }
     }
 }
