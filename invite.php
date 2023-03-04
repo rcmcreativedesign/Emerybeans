@@ -73,7 +73,7 @@ $db->close();
             <?php echo empty($emailaddress_err) ? "" : "<div class='alert alert-danger'>" . $emailaddress_err . "</div>";?>
             <?php echo empty($notification_success) ? "" : "<div class='alert alert-success'>" . $notification_success . "</div>";?>
             <?php echo empty($notification_failure) ? "" : "<div class='alert alert-danger'>" . $notification_failure . "</div>";?>
-            <div><?php echo empty($password) ? '' : 'Password: ' . $password;?></div>
+            <div><?php //echo empty($password) ? '' : 'Password: ' . $password;?></div>
             
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                     <div class="form-group">

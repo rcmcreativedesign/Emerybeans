@@ -41,21 +41,35 @@ $db->close();
             <p>Manage Accounts</p>
 
             <form id="inviteform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div class="row form-group">
+                <div class="row form-group">
                     <div class="col-sm-2">Display Name</div>
                     <div class="col-sm-2">Email Address</div>
-                    <div class="col-sm-2">Invite Timestamp</div>
-                    <div class="col-sm-3"></div>
+                    <div class="col-sm-2">Last Login</div>
+                    <div class="col-sm-1">Enabled</div>
+                    <div class="col-sm-1">Admin</div>
+                    <div class="col-sm-4"></div>
                 </div>
-
-                Edit/Udate
-                Delete
-                Edit
+                <div class="row form-group">
+                    <div class="col-sm-2" data-id="" data-type="displayName"></div>
+                    <div class="col-sm-2" data-id="" data-type="emailAddress"></div>
+                    <div class="col-sm-2" data-id="" data-type="lastLogin"></div>
+                    <div class="col-sm-1" data-id="" data-type="enabled"></div>
+                    <div class="col-sm-1" data-id="" data-type="admin"></div>
+                    <div class="col-sm-4">
+                        <a class="edit-link btn btn-primary" href="#">Edit</a>
+                        <a class="delete-link btn btn-danger" href="#">Delete</a>
+                    </div>
+                </div>
             </form>
         </div>
         <script type="text/javascript">
             $(function () {
-
+                $(".edit-link").click(function() {
+                    var that = this;
+                    $(that).val("Save");
+                    $(that).parent().find("[data-type='displayName']").innerHtml("<input type='text' value='' />");
+                });
+                
             });
         </script>
     </body>

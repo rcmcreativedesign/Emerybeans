@@ -87,11 +87,11 @@ $db->close();
                     <div class="col-sm-2">Display Name</div>
                     <div class="col-sm-2">Email Address</div>
                     <div class="col-sm-2">Invite Timestamp</div>
-                    <div class="col-sm-3"></div>
+                    <div class="col-sm-4"></div>
                 </div>
                 <?php
                 if ($total == 0) {
-                    echo "<div class=\"row form-group\"><div class=\"col-sm-8\">No records</div></div>";
+                    echo "<div class=\"row form-group\"><div class=\"col-sm-10\">No records</div></div>";
                 }
                 while ($i < $total) {
                     $invitearray = $invites[$i];
@@ -99,8 +99,8 @@ $db->close();
                     echo "  <div class=\"col-sm-2\">" . $invitearray[1] . "</div>\n";
                     echo "  <div class=\"col-sm-2\">" . $invitearray[2] . "</div>\n";
                     echo "  <div class=\"col-sm-2\">" . $invitearray[3] . "</div>\n";
-                    echo "  <div class=\"col-sm-3\"><a class=\"delete-link btn btn-secondary\" data-id=\"" . $invitearray[0] . "\" href=\"#\">Delete</a>" . 
-                         "<a class=\"resend-link btn btn-secondary\" data-id=\"" . $invitearray[0] . "\" href=\"#\">Resend</a></div>\n";
+                    echo "  <div class=\"col-sm-4\"><a class=\"resend-link btn btn-primary\" data-id=\"" . $invitearray[0] . "\" href=\"#\">Resend</a>" . 
+                         "<a class=\"delete-link btn btn-danger\" data-id=\"" . $invitearray[0] . "\" href=\"#\">Delete</a></div>\n";
                     echo "</div>\n";
                     echo "\n";
                     $i++;
