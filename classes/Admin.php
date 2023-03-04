@@ -24,6 +24,24 @@ class Admin {
         return $results;
     }
 
+    public function getAllUsers() {
+        $query = "SELECT id, emailAddress, displayName, lastLoginTimestamp, enabled, inviteAuthorized FROM user;";
+        $results = array();
+        if ($stmt = $this->conn->prepare($query)) {
+            if ($stmt->execute()) {
+                $stmtresult = $stmt->get_result();
+
+                if ($stmtresult->num_rows > 0) {
+                    while ($stmtresult_val = $stmtresult->fetch_assoc()) {
+                        $results[] = array($stmtresult_val["id"], $stmtresult_val["emailAddress"], $stmtresult_val["displayName"], $stmtresult_val["lastLoginTimestamp"], $stmtresult_val["enabled"], $stmtresult_val["inviteAuthorized"]);
+                    }
+                }
+            }
+            $stmt->close();
+        }
+        return $results;
+    }
+
     // public function deleteAccount($id) {
     //     $query = "DELETE FROM user WHERE id = ?";
     // }

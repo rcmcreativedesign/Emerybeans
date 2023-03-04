@@ -106,7 +106,6 @@ $db->close();
                     $i++;
                 }
                 ?>
-                </div>
                 <input type="hidden" name="inviteId" id="inviteId" />
                 <input type="hidden" name="linkType" id="linkType" />
             </form>

@@ -3,6 +3,7 @@ require_once '../_authorized.php';
 
 require_once "../classes/Database.php";
 require_once "../classes/User.php";
+require_once "../classes/Admin.php";
 
 $database = new Database();
 $db = $database->getConnection();
@@ -17,6 +18,10 @@ if (!$user->inviteAuthorized) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
+$admin = new Admin($db);
+$userList = $admin->getAllUsers();
+$i = 0;
+$total = count($invites);
 $db->close();
 
 ?>
@@ -49,6 +54,26 @@ $db->close();
                     <div class="col-sm-1">Admin</div>
                     <div class="col-sm-4"></div>
                 </div>
+                <?php
+                if ($total == 0) {
+                    echo "<div class=\"row form-group\"><div class=\"col-sm-12\">No records</div></div>";
+                }
+                while ($i < $total) {
+                    $userArray = $userList[$i];
+                    echo "<div class=\"row form-group\">\n";
+                    echo "  <div class=\"col-sm-2\">" . $userArray[1] . "</div>\n";
+                    echo "  <div class=\"col-sm-2\">" . $userArray[2] . "</div>\n";
+                    echo "  <div class=\"col-sm-2\">" . $userArray[3] . "</div>\n";
+                    echo "  <div class=\"col-sm-1\">" . $userArray[4] . "</div>\n";
+                    echo "  <div class=\"col-sm-1\">" . $userArray[5] . "</div>\n";
+                    echo "  <div class=\"col-sm-4\"><a class=\"edit-link btn btn-primary\" data-id=\"" . $userArray[0] . "\" href=\"#\">Edit</a>" . 
+                         "<a class=\"delete-link btn btn-danger\" data-id=\"" . $userArray[0] . "\" href=\"#\">Delete</a></div>\n";
+                    echo "</div>\n";
+                    echo "\n";
+                    $i++;
+                }
+                ?>
+<!-- 
                 <div class="row form-group">
                     <div class="col-sm-2" data-id="" data-type="displayName"></div>
                     <div class="col-sm-2" data-id="" data-type="emailAddress"></div>
@@ -59,14 +84,14 @@ $db->close();
                         <a class="edit-link btn btn-primary" href="#">Edit</a>
                         <a class="delete-link btn btn-danger" href="#">Delete</a>
                     </div>
-                </div>
+                </div> -->
             </form>
         </div>
         <script type="text/javascript">
             $(function () {
                 $(".edit-link").click(function() {
                     var that = this;
-                    $(that).val("Save");
+                    $(that).text("Save");
                     $(that).parent().find("[data-type='displayName']").empty().append("<input type='text' id='displayName' value='' />");
                 });
                 
