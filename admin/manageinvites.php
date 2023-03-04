@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $inviteUser = new User($db);
         $inviteUser->setUserById($inviteId);
         if ($linkType == "delete") {
-            if ($deleteUser->deleteUser()) {
+            if ($inviteUser->deleteUser()) {
                 $update_msg = "Invite deleted successfully";
             } else {
                 $update_err = "Failed to delete invite";
