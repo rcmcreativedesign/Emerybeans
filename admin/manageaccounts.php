@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $admin = new Admin($db);
 $userList = $admin->getAllUsers();
 $i = 0;
-$total = count($invites);
+$total = count($userList);
 $db->close();
 
 ?>
