@@ -7,7 +7,7 @@ class Admin {
     }
 
     public function getOpenInvites() {
-        $query = "SELECT id, emailAddress, displayName, createdTimestamp FROM user WHERE lastLoginTimestamp IS NULL;";
+        $query = "SELECT id, emailAddress, displayName, createdTimestamp FROM user WHERE lastLoginTimestamp IS NULL ORDER BY createdTimestamp;";
         $results = array();
         if ($stmt = $this->conn->prepare($query)) {
             if ($stmt->execute()) {
@@ -25,7 +25,7 @@ class Admin {
     }
 
     public function getAllUsers() {
-        $query = "SELECT id, emailAddress, displayName, lastLoginTimestamp, enabled, inviteAuthorized FROM user;";
+        $query = "SELECT id, emailAddress, displayName, lastLoginTimestamp, enabled, inviteAuthorized FROM user ORDER BY displayName;";
         $results = array();
         if ($stmt = $this->conn->prepare($query)) {
             if ($stmt->execute()) {
