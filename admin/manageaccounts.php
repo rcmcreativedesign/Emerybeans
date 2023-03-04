@@ -61,8 +61,8 @@ $db->close();
                 while ($i < $total) {
                     $userArray = $userList[$i];
                     echo "<div class=\"row form-group\">\n";
-                    echo "  <div class=\"col-sm-2\">" . $userArray[1] . "</div>\n";
                     echo "  <div class=\"col-sm-2\">" . $userArray[2] . "</div>\n";
+                    echo "  <div class=\"col-sm-2\">" . $userArray[1] . "</div>\n";
                     echo "  <div class=\"col-sm-2\">" . $userArray[3] . "</div>\n";
                     echo "  <div class=\"col-sm-1\">" . $userArray[4] . "</div>\n";
                     echo "  <div class=\"col-sm-1\">" . $userArray[5] . "</div>\n";
