@@ -61,40 +61,98 @@ $db->close();
                 while ($i < $total) {
                     $userArray = $userList[$i];
                     echo "<div class=\"row form-group\">\n";
-                    echo "  <div class=\"col-sm-2\">" . $userArray[2] . "</div>\n";
-                    echo "  <div class=\"col-sm-2\">" . $userArray[1] . "</div>\n";
-                    echo "  <div class=\"col-sm-2\">" . $userArray[3] . "</div>\n";
-                    echo "  <div class=\"col-sm-1\">" . $userArray[4] . "</div>\n";
-                    echo "  <div class=\"col-sm-1\">" . $userArray[5] . "</div>\n";
-                    echo "  <div class=\"col-sm-4\"><a class=\"edit-link btn btn-primary\" data-id=\"" . $userArray[0] . "\" href=\"#\">Edit</a>" . 
+                    echo "  <div class=\"col-sm-2\" data-id=\"" . $userArray[0] . "\" data-type=\"displayName\">" . $userArray[2] . "</div>\n";
+                    echo "  <div class=\"col-sm-2\" data-id=\"" . $userArray[0] . "\" data-type=\"emailAddress\">" . $userArray[1] . "</div>\n";
+                    echo "  <div class=\"col-sm-2\" data-id=\"" . $userArray[0] . "\" data-type=\"lastLogin\">" . $userArray[3] . "</div>\n";
+                    echo "  <div class=\"col-sm-1\" data-id=\"" . $userArray[0] . "\" data-type=\"enabled\">" . $userArray[4] . "</div>\n";
+                    echo "  <div class=\"col-sm-1\" data-id=\"" . $userArray[0] . "\" data-type=\"admin\">" . $userArray[5] . "</div>\n";
+                    echo "  <div class=\"col-sm-4\"><a class=\"edit-link btn btn-primary\" data-id=\"" . $userArray[0] . "\" data-mode=\"edit\" href=\"#\">Edit</a> " . 
+                         "<a class=\"cancel-link btn-warning hidden\" data-id=\"" . $userArray[0] . "\" data-mode=\"cancel\" href=\"#\">Cancel</a> " . 
                          "<a class=\"delete-link btn btn-danger\" data-id=\"" . $userArray[0] . "\" href=\"#\">Delete</a></div>\n";
                     echo "</div>\n";
                     echo "\n";
                     $i++;
                 }
                 ?>
-<!-- 
-                <div class="row form-group">
-                    <div class="col-sm-2" data-id="" data-type="displayName"></div>
-                    <div class="col-sm-2" data-id="" data-type="emailAddress"></div>
-                    <div class="col-sm-2" data-id="" data-type="lastLogin"></div>
-                    <div class="col-sm-1" data-id="" data-type="enabled"></div>
-                    <div class="col-sm-1" data-id="" data-type="admin"></div>
-                    <div class="col-sm-4">
-                        <a class="edit-link btn btn-primary" href="#">Edit</a>
-                        <a class="delete-link btn btn-danger" href="#">Delete</a>
-                    </div>
-                </div> -->
             </form>
         </div>
         <script type="text/javascript">
             $(function () {
+                var displayName = [];
+                var emailAddress = [];
+                // var lastLogin = [];
+                var enabled = [];
+                var admin = [];
+
                 $(".edit-link").click(function() {
                     var that = this;
-                    $(that).text("Save");
-                    $(that).parent().find("[data-type='displayName']").empty().append("<input type='text' id='displayName' value='' />");
+                    var id = $(that).data("id");
+                    var mode = $(that).data("mode");
+                    var parent = $(that).parent().parent();
+                    
+                    if (mode === "edit") {
+                        $(that).text("Save");
+                        $(that).data("mode", "save");
+                        parent.find(".cancel-link").removeClass("hidden").addClass("btn");
+                        
+                        displayName[id] = parent.find("[data-type='displayName']").text();
+                        parent.find("[data-type='displayName']").empty().append("<input type='text' class='form-control' id='displayName_" + id + "' value='" + displayName[id] +"' />");
+                        emailAddress[id] = parent.find("[data-type='emailAddress']").text();
+                        parent.find("[data-type='emailAddress']").empty().append("<input type='text' class='form-control' id='emailAddress_" + id + "' value='" + emailAddress[id] + "' />");
+                        // lastLogin[id] = parent.find("[data-type='lastLogin']").text();
+                        // parent.find("[data-type='lastLogin']").empty().append("<input type='text' class='form-control' id='lastLogin_" + id + "' value='" + lastLogin[id] + "' />");
+                        enabled[id] = parent.find("[data-type='enabled']").text();
+                        parent.find("[data-type='enabled']").empty().append("<input type='text' class='form-control' id='enabled_" + id + "' value='" + enabled[id] + "' />");
+                        admin[id] = parent.find("[data-type='admin']").text();
+                        parent.find("[data-type='admin']").empty().append("<input type='text' class='form-control' id='admin_" + id + "' value='" + admin[id] + "' />");
+                    } else if (mode === "save") {
+                        $(that).text("Edit");
+                        $(that).data("mode", "edit");
+                        parent.find(".cancel-link").addClass("hidden").removeClass("btn");
+
+                        var displayNameVal = $("#displayName_" + id).val();
+                        var emailAddressVal = $("#emailAddress_" + id).val();
+                        // var lastLoginVal = $("#lastLogin_" + id).val();
+                        var enabledVal = $("#enabled_" + id).val();
+                        var adminVal = $("#admin_" + id).val();
+
+                        parent.find("[data-type='displayName']").empty();
+                        parent.find("[data-type='displayName']").text(displayNameVal);
+                        parent.find("[data-type='emailAddress']").empty();
+                        parent.find("[data-type='emailAddress']").text(emailAddressVal);
+                        // parent.find("[data-type='lastLogin']").empty();
+                        // parent.find("[data-type='lastLogin']").text(lastLoginVal);
+                        parent.find("[data-type='enabled']").empty();
+                        parent.find("[data-type='enabled']").text(enabledVal);
+                        parent.find("[data-type='admin']").empty();
+                        parent.find("[data-type='admin']").text(adminVal);
+                    }
                 });
-                
+
+                $(".cancel-link").click(function() {
+                    var that = this;
+                    var id = $(that).data("id");
+                    var parent = $(that).parent().parent();
+
+                    $(that).addClass("hidden").removeClass("btn");
+                    parent.find(".edit-link").text("Edit");
+                    parent.find(".edit-link").data("mode", "edit");
+
+                    parent.find("[data-type='displayName']").empty();
+                    parent.find("[data-type='displayName']").text(displayName[id]);
+                    parent.find("[data-type='emailAddress']").empty();
+                    parent.find("[data-type='emailAddress']").text(emailAddress[id]);
+                    // parent.find("[data-type='lastLogin']").empty();
+                    // parent.find("[data-type='lastLogin']").text(lastLogin[id]);
+                    parent.find("[data-type='enabled']").empty();
+                    parent.find("[data-type='enabled']").text(enabled[id]);
+                    parent.find("[data-type='admin']").empty();
+                    parent.find("[data-type='admin']").text(admin[id]);
+                });
+
+                $(".delete-link").click(function() {
+
+                });
             });
         </script>
     </body>

@@ -99,7 +99,7 @@ $db->close();
                     echo "  <div class=\"col-sm-2\">" . $invitearray[2] . "</div>\n";
                     echo "  <div class=\"col-sm-2\">" . $invitearray[1] . "</div>\n";
                     echo "  <div class=\"col-sm-2\">" . $invitearray[3] . "</div>\n";
-                    echo "  <div class=\"col-sm-4\"><a class=\"resend-link btn btn-primary\" data-id=\"" . $invitearray[0] . "\" href=\"#\">Resend</a>" . 
+                    echo "  <div class=\"col-sm-4\"><a class=\"resend-link btn btn-primary\" data-id=\"" . $invitearray[0] . "\" href=\"#\">Resend</a> " . 
                          "<a class=\"delete-link btn btn-danger\" data-id=\"" . $invitearray[0] . "\" href=\"#\">Delete</a></div>\n";
                     echo "</div>\n";
                     echo "\n";
