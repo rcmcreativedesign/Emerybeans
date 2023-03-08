@@ -42,6 +42,21 @@ class Admin {
         return $results;
     }
 
+    public function getCountOfAdmins() {
+        $query = "SELECT COUNT(id) adminCount FROM user WHERE admin = 1";
+        $adminCount = -1;
+        if ($stmt = $this->conn->prepare($query)) {
+            if ($stmt->execute()) {
+                $result = $stmt->get_result();
+
+                $fetch = $result->fetch_assoc();
+                $adminCount = $fetch["adminCount"];
+            }
+            $stmt->close();
+        }
+        return $adminCount;
+
+    }
     // public function deleteAccount($id) {
     //     $query = "DELETE FROM user WHERE id = ?";
     // }

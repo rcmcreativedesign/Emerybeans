@@ -3,6 +3,7 @@ require_once '../_authorized.php';
 
 require_once "../classes/Database.php";
 require_once "../classes/User.php";
+require_once "../classes/Admin.php";
 
 $database = new Database();
 $db = $database->getConnection();
@@ -16,6 +17,8 @@ if (!$user->inviteAuthorized) {
     exit;
 }
 
+$admin = new Admin($db);
+
 $notification_failure = $notification_success = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -26,31 +29,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $adminVal = getPostOrEmpty("admin");
 
     if (empty($idVal)) {
-        $notification_failure = "Missing Id";
+        $notification_failure = "Missing Id.";
     } else {
         $updateUser = new User($db);
         if ($updateUser->setUserById($idVal)) {
             if (empty($emailAddressVal)) {
                 // Delete
-                if ($updateUser->deleteUser()) {
-                    $notification_success = "User deleted successfully";
+                if ($admin->getCountOfAdmins() > 1) {
+                    if ($updateUser->deleteUser()) {
+                        $notification_success = "User deleted successfully.";
+                    } else {
+                    $notification_failure = "Failed to delete user.";
+                    }
                 } else {
-                   $notification_failure = "Failed to delete user";
+                    $notification_failure = "Unable to delete user. One admin is required.";
                 }
             } else {
                 // Update
-                $updateUser->displayName = $displayNameVal;
-                $updateUser->emailAddress = $emailAddressVal;
-                $updateUser->enabled = $enabledVal;
-                $updateUser->inviteAuthorized = $adminVal;
-                if ($updateUser->saveUser()) {
-                    $notification_success = "User updated successfully";
+                if ($updateUser->inviteAuthorized && $adminVal == 0 && $admin->getCountOfAdmins() < 2) {
+                    $notification_failure = "Unable to update user. One admin is required.";
                 } else {
-                    $notification_failure = "Unable to update user";
+                    $updateUser->displayName = $displayNameVal;
+                    $updateUser->emailAddress = $emailAddressVal;
+                    $updateUser->enabled = $enabledVal;
+                    $updateUser->inviteAuthorized = $adminVal;
+                    if ($updateUser->saveUser()) {
+                        $notification_success = "User updated successfully.";
+                    } else {
+                        $notification_failure = "Unable to update user.";
+                    }
                 }
             }
         } else {
-            $notification_failure = "Failed to load user";
+            $notification_failure = "Failed to load user.";
         }
     }
 }
@@ -62,6 +73,7 @@ if (!empty($notification_failure)) {
     $response = array("success" => true, "message" => $notification_success);
     echo json_encode($response);
 }
+
 $db->close();
 
 function getPostOrEmpty($postVal) {
