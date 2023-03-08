@@ -15,8 +15,7 @@ if (!$user->inviteAuthorized) {
     exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-}
+
 
 $admin = new Admin($db);
 $userList = $admin->getAllUsers();
@@ -44,6 +43,9 @@ $db->close();
             <?php include '../navbar.php'; ?>
             <h2>Welcome to Emery Beans!</h2>
             <p>Manage Accounts</p>
+
+            <div class="alert alert-danger hidden"></div>
+            <div class="alert alert-success hidden"></div>
 
             <form id="inviteform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="row form-group">
@@ -77,6 +79,7 @@ $db->close();
             </form>
         </div>
         <script type="text/javascript">
+            var postUrl = "modifyaccounts.php";
             $(function () {
                 var displayName = [];
                 var emailAddress = [];
@@ -106,26 +109,36 @@ $db->close();
                         admin[id] = parent.find("[data-type='admin']").text();
                         parent.find("[data-type='admin']").empty().append("<input type='text' class='form-control' id='admin_" + id + "' value='" + admin[id] + "' />");
                     } else if (mode === "save") {
-                        $(that).text("Edit");
-                        $(that).data("mode", "edit");
-                        parent.find(".cancel-link").addClass("hidden").removeClass("btn");
-
                         var displayNameVal = $("#displayName_" + id).val();
                         var emailAddressVal = $("#emailAddress_" + id).val();
                         // var lastLoginVal = $("#lastLogin_" + id).val();
                         var enabledVal = $("#enabled_" + id).val();
                         var adminVal = $("#admin_" + id).val();
+                        $.post(postUrl, { id: id, displayName: displayNameVal, emailAddress: emailAddressVal, enabled: enabledVal, admin: adminVal }, function (data) {
+                            if (data) {
+                                var response = JSON.parse(data);
+                                if (response.success) {
+                                    $(that).text("Edit");
+                                    $(that).data("mode", "edit");
+                                    parent.find(".cancel-link").addClass("hidden").removeClass("btn");
 
-                        parent.find("[data-type='displayName']").empty();
-                        parent.find("[data-type='displayName']").text(displayNameVal);
-                        parent.find("[data-type='emailAddress']").empty();
-                        parent.find("[data-type='emailAddress']").text(emailAddressVal);
-                        // parent.find("[data-type='lastLogin']").empty();
-                        // parent.find("[data-type='lastLogin']").text(lastLoginVal);
-                        parent.find("[data-type='enabled']").empty();
-                        parent.find("[data-type='enabled']").text(enabledVal);
-                        parent.find("[data-type='admin']").empty();
-                        parent.find("[data-type='admin']").text(adminVal);
+                                    parent.find("[data-type='displayName']").empty();
+                                    parent.find("[data-type='displayName']").text(displayNameVal);
+                                    parent.find("[data-type='emailAddress']").empty();
+                                    parent.find("[data-type='emailAddress']").text(emailAddressVal);
+                                    // parent.find("[data-type='lastLogin']").empty();
+                                    // parent.find("[data-type='lastLogin']").text(lastLoginVal);
+                                    parent.find("[data-type='enabled']").empty();
+                                    parent.find("[data-type='enabled']").text(enabledVal);
+                                    parent.find("[data-type='admin']").empty();
+                                    parent.find("[data-type='admin']").text(adminVal);
+
+                                } 
+                                notify(response.message, response.success);
+                            } else {
+                                notify("Failed to get a response from the server.", false);
+                            }
+                        });
                     }
                 });
 
@@ -151,9 +164,29 @@ $db->close();
                 });
 
                 $(".delete-link").click(function() {
-
+                    var that = this;
+                    var id = $(that).data("id");
+                    
+                    $.post(postUrl, { id: id }, function (data) {
+                        var response = JSON.parse(data);
+                        if (response.success) {
+                            var parent = $(that).parent().parent();
+                            parent.remove();
+                        }
+                        notify(response.message, response.success);
+                    });
                 });
             });
+
+            function notify(message, success) {
+                if (success) {
+                    $(".alert-danger").addClass("hidden").text();
+                    $(".alert-success").removeClass("hidden").text(message);
+                } else {
+                    $(".alert-danger").removeClass("hidden").text(message);
+                    $(".alert-success").addClass("hidden").text();
+                }
+            }
         </script>
     </body>
 </html>
