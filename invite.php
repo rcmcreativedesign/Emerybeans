@@ -34,14 +34,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (empty($emailaddress_err) && empty($displayname_err)) {
         $password = $user->generatePassword();
-        $user->createUser($emailaddress, $password, $displayname);
+        if ($user->createUser($emailaddress, $password, $displayname)) {
+            $notification_success = "User created successfully!<br />";
+        } else {
+            $notification_failure = "Failed to create User.<br />";
+        }
     }
 
     if(empty($emailaddress_err) && empty($displayname_err) && !empty($password) && empty($notification_failure)) {
         if ($mailer->sendInvite($emailaddress, $password)) {
-            $notification_success = "Invite sent successfully!";
+            $notification_success .= "Invite sent successfully!";
         } else {
-            $notification_failure = "Invite failed to send. Mailer Error: {$mailer->errorMessage}";
+            $notification_failure .= "Invite failed to send. Mailer Error: {$mailer->errorMessage}";
         }
     }
 }
@@ -67,9 +71,9 @@ $db->close();
             <h2>Welcome to Emery Beans!</h2>
             <p>Send Invites</p>
             <?php echo empty($emailaddress_err) ? "" : "<div class='alert alert-danger'>" . $emailaddress_err . "</div>";?>
-            <?php echo empty($notification_failure) ? "" : "<div class='alert alert-danger'>" . $notification_failure . "</div>";?>
             <?php echo empty($notification_success) ? "" : "<div class='alert alert-success'>" . $notification_success . "</div>";?>
-            <div><?php echo empty($password) ? '' : 'Password: ' . $password;?></div>
+            <?php echo empty($notification_failure) ? "" : "<div class='alert alert-danger'>" . $notification_failure . "</div>";?>
+            <div><?php //echo empty($password) ? '' : 'Password: ' . $password;?></div>
             
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                     <div class="form-group">
