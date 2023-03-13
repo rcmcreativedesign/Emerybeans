@@ -22,4 +22,15 @@ function getEntryCount($link) {
     return $result_count;
 }
 
+function getPostOrEmpty($postVal) {
+    if (isset($_POST[$postVal])) {
+        if (empty(trim($_POST[$postVal]))) {
+            return "";
+        } else {
+            return trim($_POST[$postVal]);
+        }
+    } else {
+        return "";
+    }
+}
 ?>
