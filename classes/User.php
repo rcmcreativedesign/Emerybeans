@@ -12,6 +12,8 @@ class User {
     public $createdTimestamp;
     public $enabled;
     public $inviteAuthorized;
+    public $recoveryHash;
+    public $recoverySendDate;
 
     public function __construct($db) {
         $this->conn = $db;
@@ -31,12 +33,12 @@ class User {
     }
 
     public function setUserById($id) {
-        $sql = "SELECT id, emailAddress, displayName, pwHash, hashSeed, lastLoginTimestamp, createdTimestamp, enabled, inviteAuthorized FROM user WHERE id = ?";
+        $sql = "SELECT id, emailAddress, displayName, pwHash, hashSeed, lastLoginTimestamp, createdTimestamp, enabled, inviteAuthorized, recoveryHash, recoverySentDate FROM user WHERE id = ?";
         if ($stmt = $this->conn->prepare($sql)) {
             $stmt->bind_param("i", $id);
             if ($stmt->execute()) {
                 $stmt->store_result();
-                $stmt->bind_result($this->id, $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed, $this->lastLoginTimestamp, $this->createdTimestamp, $this->enabled, $this->inviteAuthorized);
+                $stmt->bind_result($this->id, $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed, $this->lastLoginTimestamp, $this->createdTimestamp, $this->enabled, $this->inviteAuthorized, $this->recoveryHash, $this->recoverySendDate);
                 $stmt->fetch();
                 $stmt->close();
                 if (!$this->id) {
@@ -55,12 +57,36 @@ class User {
     }
 
     public function setUserByEmailAddress($emailaddress) {
-        $sql = "SELECT id, emailAddress, displayName, pwHash, hashSeed, lastLoginTimestamp, createdTimestamp, enabled, inviteAuthorized FROM user WHERE emailAddress = ?";
+        $sql = "SELECT id, emailAddress, displayName, pwHash, hashSeed, lastLoginTimestamp, createdTimestamp, enabled, inviteAuthorized, recoveryHash, recoverySentDate FROM user WHERE emailAddress = ?";
         if ($stmt = $this->conn->prepare($sql)) {
             $stmt->bind_param("s", $emailaddress);
             if ($stmt->execute()) {
                 $stmt->store_result();
-                $stmt->bind_result($this->id, $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed, $this->lastLoginTimestamp, $this->createdTimestamp, $this->enabled, $this->inviteAuthorized);
+                $stmt->bind_result($this->id, $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed, $this->lastLoginTimestamp, $this->createdTimestamp, $this->enabled, $this->inviteAuthorized, $this->recoveryHash, $this->recoverySendDate);
+                $stmt->fetch();
+                $stmt->close();
+                if (!$this->id) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                $stmt->close();
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    public function setUserByRecoveryHash($recoveryHash) {
+        $sql = "SELECT id, emailAddress, displayName, pwHash, hashSeed, lastLoginTimestamp, createdTimestamp, enabled, inviteAuthorized, recoveryHash, recoverySentDate FROM user WHERE recoveryHash = ?";
+        if ($stmt = $this->conn->prepare($sql)) {
+            $stmt->bind_param("s", $recoveryHash);
+            if ($stmt->execute()) {
+                $stmt->store_result();
+                $stmt->bind_result($this->id, $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed, $this->lastLoginTimestamp, $this->createdTimestamp, $this->enabled, $this->inviteAuthorized, $this->recoveryHash, $this->recoverySendDate);
                 $stmt->fetch();
                 $stmt->close();
                 if (!$this->id) {
@@ -94,9 +120,9 @@ class User {
                 return false;
             }
         } else {
-            $sql = "UPDATE user SET emailAddress = ?, displayName = ?, pwHash = ?, hashSeed = ?, lastLoginTimestamp = ?, createdTimestamp = ?, enabled = ?, inviteAuthorized = ? WHERE id = ?";
+            $sql = "UPDATE user SET emailAddress = ?, displayName = ?, pwHash = ?, hashSeed = ?, lastLoginTimestamp = ?, createdTimestamp = ?, enabled = ?, inviteAuthorized = ?, recoveryHash = ?, recoverySentDate = ? WHERE id = ?";
             if ($stmt = $this->conn->prepare($sql)) {
-                $stmt->bind_param("ssssssiii", $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed, $this->lastLoginTimestamp, $this->createdTimestamp, $this->enabled, $this->inviteAuthorized, $this->id);
+                $stmt->bind_param("ssssssiissi", $this->emailAddress, $this->displayName, $this->pwHash, $this->hashSeed, $this->lastLoginTimestamp, $this->createdTimestamp, $this->enabled, $this->inviteAuthorized, $this->recoveryHash, $this->recoverySendDate, $this->id);
                 if (!$stmt->execute()) {
                     $stmt->close();
                     return false;
@@ -146,6 +172,15 @@ class User {
     public function createPasswordHash($emailaddress, $password, $hashseed) {
         $passwordhash = sha1($emailaddress . $password . $hashseed);
         return $passwordhash;
+    }
+
+    public function createRecoveryHash() {
+        $recoverHash = sha1($this->getGUID());
+        return $recoverHash;
+    }
+
+    public function createHashSeed() {
+        return $this->getGUID();
     }
 
     private function getGUID(){
