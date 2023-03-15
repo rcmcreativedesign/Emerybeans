@@ -33,4 +33,16 @@ function getPostOrEmpty($postVal) {
         return "";
     }
 }
+
+function getGetOrEmpty($getVal) {
+    if (isset($_GET[$getVal])) {
+        if (empty(trim($_GET[$getVal]))) {
+            return "";
+        } else {
+            return trim($_GET[$getVal]);
+        }
+    } else {
+        return "";
+    }
+}
 ?>
