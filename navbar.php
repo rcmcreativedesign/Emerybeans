@@ -1,7 +1,17 @@
-<?php require_once '_globals.php'; ?>
+<?php 
+    require_once '_globals.php'; 
+    require_once 'classes/Database.php';
+    require_once 'classes/Site.php';
+
+    $database = new Database();
+    $db = $database->getConnection();
+    $site = new Site($db);
+
+    $db->close();
+?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <b>Emery Beans</b>
+        <b><?php echo $site->siteName?></b>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>

@@ -2,12 +2,14 @@
 require_once '../_authorized.php';
 
 require_once "../classes/Database.php";
+require_once '../classes/Site.php';
 require_once "../classes/User.php";
 require_once "../classes/Admin.php";
 require_once "../classes/Mailer.php";
 
 $database = new Database();
 $db = $database->getConnection();
+$site = new Site($db);
 $user = new User($db);
 $user->setUserById($_SESSION["id"]);
 
@@ -36,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $inviteUser->pwHash = $inviteUser->createPasswordHash($inviteUser->emailAddress, $password, $inviteUser->hashSeed);
             $inviteUser->saveUser();
 
-            $mailer = new Mailer($db);
+            $mailer = new Mailer($db, $site);
             if ($mailer->sendInvite($inviteUser->emailAddress, $password)) {
                 $update_msg = "Invite resent successfully!";
             } else {
@@ -58,19 +60,19 @@ $db->close();
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Emery Beans</title>
+        <title><?php echo $site->siteName?></title>
 
         <link href="../site.css" rel="stylesheet" type="text/css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anontmous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
         
     </head>
     <body>
         <div class="wrapper container">
             <?php include '../navbar.php'; ?>
-            <h2>Welcome to Emery Beans!</h2>
+            <h2>Welcome to <?php echo $site->siteName?>!</h2>
             <p>Manage Invites</p>
 
             <?php
