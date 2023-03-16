@@ -47,6 +47,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 $user->recoveryHash = $user->createRecoveryHash();
                 $user->recoverySendDate = date("Y-m-d H:i:s");
                 $user->saveUser();
+                $mailer->sendRecovery($emailAddress, $user->recoveryHash);
                 $notification_success = "Please check your email for the recovery link.";
             } else {
                 $notification_failure = "Unable to find an account with that email address.";
@@ -81,7 +82,7 @@ $db->close();
 
         <link href="site.css" rel="stylesheet" type="text/css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anontmous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     </head>
     <body>
