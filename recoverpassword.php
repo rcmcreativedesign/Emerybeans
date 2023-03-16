@@ -19,7 +19,7 @@ $mailer = new Mailer($db, $site);
 $email_err = $password_err = $notification_success = $notification_failure = $recoverHash = $emailAddress = "";
 
 if($_SERVER["REQUEST_METHOD"] == "POST") {
-    $recoverHash = getPostOrEmpty("recoverHash");
+    $recoverHash = cleanHash(getPostOrEmpty("recoverHash"));
     if (!empty($recoverHash)) {
         // User submitted the form with new password
         $newPassword = getPostOrEmpty("newPassword");
@@ -35,6 +35,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 $notification_success = "Password changed successfully.";
             } else {
                 // Recovery Hash is invalid
+                $notification_failure = "Recovery code is invalid. Please try the link again or resubmit your email address.";
                 $recoverHash = "";
             }
         }
@@ -47,6 +48,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
                 $user->recoveryHash = $user->createRecoveryHash();
                 $user->recoverySendDate = date("Y-m-d H:i:s");
                 $user->saveUser();
+                $mailer->sendRecovery($emailAddress, $user->recoveryHash);
                 $notification_success = "Please check your email for the recovery link.";
             } else {
                 $notification_failure = "Unable to find an account with that email address.";
@@ -56,7 +58,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 } else if($_SERVER["REQUEST_METHOD"] == "GET") {
-    $recoverHash = getGetOrEmpty("recoverHash");
+    $recoverHash = cleanHash(getGetOrEmpty("recoverHash"));
     if (!empty($recoverHash)) {
         // User clicked the link in the email
         $user = new User($db);
@@ -64,11 +66,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
             $emailAddress = $user->emailAddress;
         } else {
             // Recovery Hash is invalid
+            $notification_failure = "Recovery code is invalid. Please try the link again or resubmit your email address.";
             $recoverHash = "";
         }
+    } else {
+        $notification_failure = "Recovery code missing or invalid. Please try the link again or resubmit your email address.";
     }
 }
 
+function cleanHash($hash) {
+    if (!empty($hash)) {
+        if (preg_match('/[^a-z0-9]/i', $hash)) {
+            // failed regex
+            return '';
+        } else {
+            return $hash;
+        }
+    } else {
+        return $hash;
+    }
+}
 $db->close();
 
 ?>
@@ -81,7 +98,7 @@ $db->close();
 
         <link href="site.css" rel="stylesheet" type="text/css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anontmous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     </head>
     <body>
