@@ -49,8 +49,8 @@ class Mailer {
                 . '<p>Password: ' . $password . '</p>'
                 . '</body>'
                 . '</html>';
-            var_dump($mail->Body);
-            //$mail->send();
+            
+            $mail->send();
             return true;
         } catch (Exception $e) {
             $this->errorMessage = $mail->ErrorInfo;
@@ -87,8 +87,8 @@ class Mailer {
                 . '<p><a href="' . $this->site->siteUrl . '/recoverpassword.php?recoverHash=' . $recoveryHash . '">Click Here</a></p>'
                 . '</body>'
                 . '</html>';
-            var_dump($mail->Body);
-            //$mail->send();
+            
+            $mail->send();
             return true;
         } catch (Exception $e) {
             $this->errorMessage = $mail->ErrorInfo;
