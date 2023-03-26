@@ -2,13 +2,30 @@
     require_once '_globals.php';
     require_once "classes/Database.php";
     require_once 'classes/Site.php';
+    require_once 'classes/User.php';
 
     $database = new Database();
     $db = $database->getConnection();
 
-    $siteName = $siteUrl = $adminEmailAddress = $userName = $userEmailAddress = $userPassword = "";
-    $siteName_err = "";
+    $siteName = $siteUrl = $adminEmailAddress = $userDisplayName = $userEmailAddress = $userPassword = "";
+    $siteName_err = $siteUrl_err = $adminEmailAddress_err = $userDisplayName_err = $userEmailAddress_err = $userPassword_err = "";
 
+    // Check all the tables
+    $tables = Array("entry", "user", "entryview", "entrylike", "site");
+    $foundCount = 0;
+    for ($i = 0; $i < count($tables); $i++) {
+//echo 'tableExists('.$tables[$i].'): '.tableExists($tables[$i], $db).'<br/>';
+        if (tableExists($tables[$i], $db))
+            $foundCount++;
+    }
+//echo 'foundCount: '.$foundCount.'<br/>';
+//echo 'count(tables): '.count($tables).'<br/>';
+    if ($foundCount == count($tables)) {
+        $db->close();
+        header("location: index.php");
+        exit;
+    }
+    
     // Check if data was posted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $siteName = getPostOrEmpty("siteName");
@@ -17,31 +34,41 @@
         $siteUrl = getPostOrEmpty("siteUrl");
         if (empty($siteUrl))
             $siteUrl_err = "Please enter a value";
-    } else {
-        // If database is already set up, redirect user to welcome page
+        $adminEmailAddress = getPostOrEmpty("adminEmailAddress");
+        if (empty($adminEmailAddress))
+            $adminEmailAddress_err = "Please enter a value";
+        $userDisplayName = getPostOrEmpty("userDisplayName");
+        if (empty($userDisplayName))
+            $userDisplayName_err = "Please enter a value";
+        $userEmailAddress = getPostOrEmpty("userEmailAddress");
+        if (empty($userEmailAddress))
+            $userEmailAddress_err = "Please enter a value";
+        $userPassword = getPostOrEmpty("userPassword");
+        if (empty($userPassword))
+            $userPassword_err = "Please enter a value";
 
-        // Check all the tables
-        $tables = Array("entry", "user", "entryview", "entrylike", "site", "fake");
-        $foundCount = 0;
-        for ($i = 0; $i < count($tables); $i++) {
-//echo 'tableExists('.$tables[$i].'): '.tableExists($tables[$i], $db).'<br/>';
-            if (tableExists($tables[$i], $db))
-                $foundCount++;
-        }
-//echo 'foundCount: '.$foundCount.'<br/>';
-//echo 'count(tables): '.count($tables).'<br/>';
-        if ($foundCount == count($tables)) {
-            $db->close();
-            header("location: index.php");
-            exit;
+        if (empty($siteName_err) && empty($siteUrl_err) && empty($adminEmailAddress_err) && empty($userDisplayName_err) && empty($userEmailAddress_err) && empty($userPassword_err)) {
+            for ($i = 0; $i < count($tables); $i++) {
+                if (!tableExists($tables[$i], $db))
+                    createTable($tables[$i], $db);
+            }
+
+            $newSite = new Site($db);
+            $newUser = new User($db);
+
+            $newSite->siteName = $siteName;
+            $newSite->siteUrl = $siteUrl;
+            $newSite->adminEmailAddress = $adminEmailAddress;
+            $newSite->saveSite();
+
+            $newUser->createUser($userEmailAddress, $userPassword, $userDisplayName);
+            $newUser->enabled = true;
+            $newUser->inviteAuthorized = true;
+            $newUser->saveUser();
         }
     }
 
-
-
     $site = new Site($db);
-
-    //if ($site->siteName)
 
     $db->close();
 
@@ -96,7 +123,7 @@
                 break;
         }
 
-        $tableExists = tableExists($tableName);
+        $tableExists = tableExists($tableName, $db);
 
         if (!$tableExists) {
             $dbCreated = false;
@@ -155,7 +182,10 @@
                         </div>
                         <div class="row form-group">
                             <label class="col-sm-2" for="adminEmailAddress">Admin Email Address:</label>
-                            <div class="col-sm-2"><input type="text" name="adminEmailAddress" value="<?php echo $adminEmailAddress;?>" class="form-control" /></div>
+                            <div class="col-sm-2">
+                                <input type="text" name="adminEmailAddress" value="<?php echo $adminEmailAddress;?>" class="form-control <?php echo (!empty($adminEmailAddress_err)) ? 'is-invalid' : ''; ?>" />
+                                <span class="invalid-feedback"><?php echo $adminEmailAddress_err; ?></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -166,16 +196,25 @@
                     <div class="col-sm-1"></div>
                     <div class="col-sm-11">
                         <div class="row form-group">
-                            <label class="col-sm-2" for="userName">Display Name:</label>
-                            <div class="col-sm-2"><input type="text" name="userName" value="<?php echo $userName;?>" class="form-control" /></div>
+                            <label class="col-sm-2" for="userDisplayName">Display Name:</label>
+                            <div class="col-sm-2">
+                                <input type="text" name="userDisplayName" value="<?php echo $userDisplayName;?>" class="form-control <?php echo (!empty($userDisplayName_err)) ? 'is-invalid' : ''; ?>" />
+                                <span class="invalid-feedback"><?php echo $userDisplayName_err; ?></span>
+                            </div>
                         </div>
                         <div class="row form-group">
                             <label class="col-sm-2" for="userEmail">Email Address:</label>
-                            <div class="col-sm-2"><input type="text" name="userEmailAddress" value="<?php echo $userEmailAddress;?>" class="form-control" /></div>
+                            <div class="col-sm-2">
+                                <input type="text" name="userEmailAddress" value="<?php echo $userEmailAddress;?>" class="form-control <?php echo (!empty($userEmailAddress_err)) ? 'is-invalid' : ''; ?>" />
+                                <span class="invalid-feedback"><?php echo $userEmailAddress_err; ?></span>
+                            </div>
                         </div>
                         <div class="row form-group">
                             <label class="col-sm-2" for="userPassword">Password:</label>
-                            <div class="col-sm-2"><input type="password" name="userPassword" value="<?php echo $userPassword;?>" class="form-control" /></div>
+                            <div class="col-sm-2">
+                                <input type="password" name="userPassword" value="<?php echo $userPassword;?>" class="form-control <?php echo (!empty($userPassword_err)) ? 'is-invalid' : ''; ?>" />
+                                <span class="invalid-feedback"><?php echo $userPassword_err; ?></span>
+                            </div>
                         </div>
                     </div>
                 </div>

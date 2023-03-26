@@ -17,7 +17,11 @@ if (!$user->inviteAuthorized) {
     exit;
 }
 
-
+function yesNo($value) {
+    if ($value == 1)
+        return 'Yes';
+    return 'No'; 
+}
 
 $admin = new Admin($db);
 $userList = $admin->getAllUsers();
@@ -68,8 +72,8 @@ $db->close();
                     echo "  <div class=\"col-sm-2\" data-id=\"" . $userArray[0] . "\" data-type=\"displayName\">" . $userArray[2] . "</div>\n";
                     echo "  <div class=\"col-sm-2\" data-id=\"" . $userArray[0] . "\" data-type=\"emailAddress\">" . $userArray[1] . "</div>\n";
                     echo "  <div class=\"col-sm-2\" data-id=\"" . $userArray[0] . "\" data-type=\"lastLogin\">" . $userArray[3] . "</div>\n";
-                    echo "  <div class=\"col-sm-1\" data-id=\"" . $userArray[0] . "\" data-type=\"enabled\">" . $userArray[4] . "</div>\n";
-                    echo "  <div class=\"col-sm-1\" data-id=\"" . $userArray[0] . "\" data-type=\"admin\">" . $userArray[5] . "</div>\n";
+                    echo "  <div class=\"col-sm-1\" data-id=\"" . $userArray[0] . "\" data-type=\"enabled\">" . yesNo($userArray[4]) . "</div>\n";
+                    echo "  <div class=\"col-sm-1\" data-id=\"" . $userArray[0] . "\" data-type=\"admin\">" . yesNo($userArray[5]) . "</div>\n";
                     echo "  <div class=\"col-sm-4\"><a class=\"edit-link btn btn-primary\" data-id=\"" . $userArray[0] . "\" data-mode=\"edit\" href=\"#\">Edit</a> " . 
                          "<a class=\"cancel-link btn-warning hidden\" data-id=\"" . $userArray[0] . "\" data-mode=\"cancel\" href=\"#\">Cancel</a> " . 
                          "<a class=\"delete-link btn btn-danger\" data-id=\"" . $userArray[0] . "\" href=\"#\">Delete</a></div>\n";
@@ -99,17 +103,17 @@ $db->close();
                         $(that).text("Save");
                         $(that).data("mode", "save");
                         parent.find(".cancel-link").removeClass("hidden").addClass("btn");
-                        
+                        // value='" + enabled[id] + "'
                         displayName[id] = parent.find("[data-type='displayName']").text();
                         parent.find("[data-type='displayName']").empty().append("<input type='text' class='form-control' id='displayName_" + id + "' value='" + displayName[id] +"' />");
                         emailAddress[id] = parent.find("[data-type='emailAddress']").text();
                         parent.find("[data-type='emailAddress']").empty().append("<input type='text' class='form-control' id='emailAddress_" + id + "' value='" + emailAddress[id] + "' />");
                         // lastLogin[id] = parent.find("[data-type='lastLogin']").text();
                         // parent.find("[data-type='lastLogin']").empty().append("<input type='text' class='form-control' id='lastLogin_" + id + "' value='" + lastLogin[id] + "' />");
-                        enabled[id] = parent.find("[data-type='enabled']").text();
-                        parent.find("[data-type='enabled']").empty().append("<input type='text' class='form-control' id='enabled_" + id + "' value='" + enabled[id] + "' />");
-                        admin[id] = parent.find("[data-type='admin']").text();
-                        parent.find("[data-type='admin']").empty().append("<input type='text' class='form-control' id='admin_" + id + "' value='" + admin[id] + "' />");
+                        enabled[id] = intFromYesNo(parent.find("[data-type='enabled']").text());
+                        parent.find("[data-type='enabled']").empty().append("<select class='form-control' id='enabled_" + id + "'><option value='1'" + (enabled[id] == 1 ? " selected" : "") + ">Yes</option><option value='0'" + (enabled[id] == 0 ? " selected" : "") + ">No</option></select>");
+                        admin[id] = intFromYesNo(parent.find("[data-type='admin']").text());
+                        parent.find("[data-type='admin']").empty().append("<select class='form-control' id='admin_" + id + "'><option value='1'" + (admin[id] == 1 ? " selected" : "") + ">Yes</option><option value='0'" + (admin[id] == 0 ? " selected" : "") + ">No</option></select>");
                     } else if (mode === "save") {
                         var displayNameVal = $("#displayName_" + id).val();
                         var emailAddressVal = $("#emailAddress_" + id).val();
@@ -131,9 +135,9 @@ $db->close();
                                     // parent.find("[data-type='lastLogin']").empty();
                                     // parent.find("[data-type='lastLogin']").text(lastLoginVal);
                                     parent.find("[data-type='enabled']").empty();
-                                    parent.find("[data-type='enabled']").text(enabledVal);
+                                    parent.find("[data-type='enabled']").text(intToYesNo(enabledVal));
                                     parent.find("[data-type='admin']").empty();
-                                    parent.find("[data-type='admin']").text(adminVal);
+                                    parent.find("[data-type='admin']").text(intToYesNo(adminVal));
 
                                 } 
                                 notify(response.message, response.success);
@@ -160,9 +164,9 @@ $db->close();
                     // parent.find("[data-type='lastLogin']").empty();
                     // parent.find("[data-type='lastLogin']").text(lastLogin[id]);
                     parent.find("[data-type='enabled']").empty();
-                    parent.find("[data-type='enabled']").text(enabled[id]);
+                    parent.find("[data-type='enabled']").text(intToYesNo(enabled[id]));
                     parent.find("[data-type='admin']").empty();
-                    parent.find("[data-type='admin']").text(admin[id]);
+                    parent.find("[data-type='admin']").text(intToYesNo(admin[id]));
                 });
 
                 $(".delete-link").click(function() {
@@ -188,6 +192,18 @@ $db->close();
                     $(".alert-danger").removeClass("hidden").text(message);
                     $(".alert-success").addClass("hidden").text();
                 }
+            }
+
+            function intFromYesNo(value) {
+                if (value == "Yes")
+                    return 1;
+                return 0;
+            }
+
+            function intToYesNo(value) {
+                if (value == 1)
+                    return "Yes";
+                return "No";
             }
         </script>
     </body>
