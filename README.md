@@ -8,8 +8,6 @@ Database.php contains the connection information to your MySQL database. You can
 
 Mailer.php contains the SMTP connection information needed to send emails. Emails are a core component of the application, so you will need to set this up properly.
 
-Next you will need to add some records to your MySQL database: Initial admin user and Site settings.
+Next you will need to run setup.php to create the tables, site data, and initial admin. The site name is used throughout the application. The site URL and system email address are used for the invite and recovery emails.
 
-You'll need to use something like PhpMyAdmin to insert an initial user in the 'user' table with both the enabled and the inviteAuthorized flags set to 1. To set the password, use the recover password feature on the login page.
-
-For the Site settings, use something like PhpMyAdmin to insert records in the 'site' table. You'll need to add a system email address, the site name, and the site URL. The site name is used throughout the application. The site URL and system email address are used for the invite and recovery emails.
+It is recommended that you delete the setup.php file once you have the inital site set up.

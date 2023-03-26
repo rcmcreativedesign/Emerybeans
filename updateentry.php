@@ -12,6 +12,6 @@ $caption = $_POST["caption"];
 
 $entry->setEntryById($entryId);
 $entry->comments = $caption;
-$entry->saveEmtry();
+$entry->saveEntry();
 $db->close();
 ?>
