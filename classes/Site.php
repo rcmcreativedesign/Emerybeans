@@ -10,33 +10,33 @@ class Site {
     public $siteName;
     public $siteUrl;
     public $adminEmailAddress;
-    public $loaded = false;
 
     public function saveSite() {
-        if ($this->loaded) {
-            $sql = "INSERT INTO site (siteName, siteUrl, adminEmailAddress) VALUES (?, ?, ?)";
-            if ($stmt = $this->conn->prepare($sql)) {
-                $stmt->bind_param("sss", $this->siteName, $this->siteUrl, $this->adminEmailAddress);
-                if (!$stmt->execute()) {
-                    $stmt->close();
-                    return false;
-                }
+        $sql = "UPDATE site SET siteName = ?, siteUrl = ?, adminEmailAddress = ?";
+        if ($stmt = $this->conn->prepare($sql)) {
+            $stmt->bind_param("sss", $this->siteName, $this->siteUrl, $this->adminEmailAddress);
+            if (!$stmt->execute()) {
                 $stmt->close();
-            } else {
                 return false;
             }
+            $stmt->close();
         } else {
-            $sql = "UPDATE site SET siteName = ?, siteUrl = ?, adminEmailAddress = ?";
-            if ($stmt = $this->conn->prepare($sql)) {
-                $stmt->bind_param("sss", $this->siteName, $this->siteUrl, $this->adminEmailAddress);
-                if (!$stmt->execute()) {
-                    $stmt->close();
-                    return false;
-                }
+            return false;
+        }
+        return true;
+    }
+
+    public function createSite() {
+        $sql = "INSERT INTO site (siteName, siteUrl, adminEmailAddress) VALUES (?, ?, ?)";
+        if ($stmt = $this->conn->prepare($sql)) {
+            $stmt->bind_param("sss", $this->siteName, $this->siteUrl, $this->adminEmailAddress);
+            if (!$stmt->execute()) {
                 $stmt->close();
-            } else {
                 return false;
             }
+            $stmt->close();
+        } else {
+            return false;
         }
         return true;
     }
@@ -49,7 +49,6 @@ class Site {
                 $stmt->bind_result($this->siteName, $this->siteUrl, $this->adminEmailAddress);
                 $stmt->fetch();
                 $stmt->close();
-                $this->loaded = true;
             }else {
                 $stmt->close();
             }

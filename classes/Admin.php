@@ -55,16 +55,6 @@ class Admin {
             $stmt->close();
         }
         return $adminCount;
-
     }
-    // public function deleteAccount($id) {
-    //     $query = "DELETE FROM user WHERE id = ?";
-    // }
-
-    // public function deleteEntry($id) {
-    //     $entrylikeQuery = "DELETE FROM entrylike WHERE entryId = ?;";
-    //     $entryviewQuery = "DELETE FROM entryview WHERE entryId = ?";
-    //     $entryQuery = "DELETE FROM entry WHERE id = ?";
-    // }
 }
 ?>
