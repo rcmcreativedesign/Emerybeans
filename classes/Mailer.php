@@ -20,23 +20,8 @@ class Mailer {
 
     public function sendInvite($emailaddress, $password) {
         // Send invite email
-        $mail = new PHPMailer(true);
-        try {
-            $mail->SMTPDebug = SMTP::DEBUG_OFF;
-            $mail->isSMTP();
-            $mail->Host = '';
-            $mail->SMTPAuth = true;
-            $mail->Username = '';
-            $mail->Password = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
-
-            $mail->setFrom($this->site->adminEmailAddress, $this->site->siteName . ' Admin');
-            $mail->addAddress($emailaddress);
-
-            $mail->isHTML(true);
-            $mail->Subject = 'Invite to ' . $this->site->siteName;
-            $mail->Body = '<html>'
+            $subject = 'Invite to ' . $this->site->siteName;
+            $message = '<html>'
                 . '<head>'
                 . '<title>' . $this->site->siteName . ' Invite</title>'
                 . '</head>'
@@ -49,35 +34,14 @@ class Mailer {
                 . '<p>Password: ' . $password . '</p>'
                 . '</body>'
                 . '</html>';
-            
-            $mail->send();
-            return true;
-        } catch (Exception $e) {
-            $this->errorMessage = $mail->ErrorInfo;
-            return false;
-        }
-        return false;
+
+            return $this->sendMail($message, $subject, $emailaddress);
     }
 
     public function sendRecovery($emailaddress, $recoveryHash) {
         // Send invite email
-        $mail = new PHPMailer(true);
-        try {
-            $mail->SMTPDebug = SMTP::DEBUG_OFF;
-            $mail->isSMTP();
-            $mail->Host = '';
-            $mail->SMTPAuth = true;
-            $mail->Username = '';
-            $mail->Password = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
-
-            $mail->setFrom($this->site->adminEmailAddress, $this->site->siteName . ' Admin');
-            $mail->addAddress($emailaddress);
-
-            $mail->isHTML(true);
-            $mail->Subject = $this->site->siteName . ' - Recover Password';
-            $mail->Body = '<html>'
+        $subject = $this->site->siteName . ' - Recover Password';
+        $message = '<html>'
                 . '<head>'
                 . '<title>' . $this->site->siteName . ' Recover Password</title>'
                 . '</head>'
@@ -88,6 +52,28 @@ class Mailer {
                 . '</body>'
                 . '</html>';
             
+        return $this->sendMail($message, $subject, $emailaddress);
+    }
+
+    private function sendMail($message, $subject, $emailaddress) {
+        $mail = new PHPMailer(true);
+        try {
+            $mail->SMTPDebug = SMTP::DEBUG_OFF;
+            $mail->isSMTP();
+            $mail->SMTPAuth = true;
+            $mail->Host = ''; // ADD HOST HERE
+            $mail->Username = ''; // ADD USERNAME HERE
+            $mail->Password = ''; // ADD PASSWORD HERE
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587; // CHANGE PORT IF DIFFERENT
+
+            $mail->setFrom($this->site->adminEmailAddress, $this->site->siteName . ' Admin');
+            $mail->addAddress($emailaddress);
+
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body = $message;
+
             $mail->send();
             return true;
         } catch (Exception $e) {
