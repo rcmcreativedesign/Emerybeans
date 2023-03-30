@@ -10,18 +10,17 @@ $site = new Site($db);
 $user = new User($db);
 
 $emailaddress = $displayname = $update_err = $update_msg = "";
+$displayname_err = "";
 
 $id = $_SESSION["id"];
 $user->setUserById($id);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST["displayname"])) {
-        $displayname = trim($_POST["displayname"]);
-    } else {
-        $update_err = "Please enter a Display name.";
-    }
+    $displayname = getPostOrEmpty("displayname");
+    if (empty($displayname))
+        $displayname_err = "Please enter a value.";
 
-    if (empty($update_err)) {
+    if (empty($displayname_err)) {
         $user->displayName = $displayname;
         if ($user->saveUser()) {
             $update_msg = "Display name updated successfully.";
@@ -72,12 +71,15 @@ $db->close();
                 </div>
                 <div class="row form-group">
                     <label class="col-xs-3 col-sm-3 col-lg-2">Display Name: </label>
-                    <div class="col-sm-6"><input type="text" name="displayname" value="<?php echo $displayname;?>"/></div>
+                    <div class="col-sm-3">
+                        <input type="text" name="displayname" value="<?php echo $displayname;?>" class="form-control <?php echo (!empty($displayname_err)) ? 'is-invalid' : ''; ?>"/>
+                        <span class="invalid-feedback"><?php echo $displayname_err; ?></span>
+                    </div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-xs-3 col-sm-3  col-lg-2"></div>
+                    <div class="col-xs-3 col-sm-3 col-lg-2"></div>
                     <div class="col-sm-2">
-                        <input type="submit" id="submitnamechange" value="Update" />
+                        <input class="btn btn-primary" type="submit" id="submitnamechange" value="Update" />
                     </div>
                 </div>
                 <div class="row form-group">

@@ -4,6 +4,7 @@ require_once '../_authorized.php';
 require_once "../classes/Database.php";
 require_once '../classes/Site.php';
 require_once "../classes/User.php";
+require_once "../classes/Admin.php";
 
 $database = new Database();
 $db = $database->getConnection();
@@ -16,17 +17,16 @@ if (!$user->inviteAuthorized) {
     exit;
 }
 
-/*
-SELECT COUNT(id) AS TotalUsers FROM user
-SELECT COUNT(id) AS EnabledUsers FROM user WHERE enabled = 1
-SELECT COUNT(id) AS ActiveUsers FROM user WHERE lastLoginTimestamp > DATE_SUB(NOW(), INTERVAL 1 MONTH)
+$admin = new Admin($db);
 
-*/
-$activeTodayUsers = 0;
-$activeTodayUsersQuery = "SELECT COUNT(id) AS ActiveTodayUsers FROM user WHERE lastLoginTimestamp > DATE)SUB(NOW(), INTERVAL 1 DAY)";
+$totalUsers = $admin->getCountOfTotalUsers();
+$totalEnabled = $admin->getCountOfEnabledUsers();
+$activeTodayUsers = $admin->getCountOfActiveUsersToday();
 
+$newTodayEntry = $admin->getCountOfEntriesCreatedToday();
+$totalEntries = $admin->getCountOfTotalEntries();
 
-$newTodayEntry = 0;
+$mostLikedEntry = $admin->getMostLikedEntry();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,9 +40,6 @@ $newTodayEntry = 0;
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-        <style>
-            .entry-image { max-width: 300px; }
-        </style>
     </head>
     <body>
         <div class="wrapper container">
@@ -58,7 +55,8 @@ $newTodayEntry = 0;
                             </h4>
                         </div>
                         <div class="panel-body">
-                            Active Users Today: <?php echo $activeTodayUsers;?>
+                            Active Users Today: <?php echo $activeTodayUsers;?><br/>
+                            Total Users/Enabled Users: <?php echo $totalUsers . " / " . $totalEnabled?><br/>
                         </div>
                     </div>
                 </div>
@@ -70,7 +68,23 @@ $newTodayEntry = 0;
                             </h4>
                         </div>
                         <div class="panel-body">
-                            New Entries Today: <?php echo $newTodayEntry;?>
+                            New Entries Today: <?php echo $newTodayEntry;?><br/>
+                            Total Entries: <?php echo $totalEntries;?><br/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="coll-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                Top Statistics
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            Most Liked Entry: <?php echo $mostLikedEntry;?><br/>
+
                         </div>
                     </div>
                 </div>
