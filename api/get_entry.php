@@ -55,7 +55,7 @@ try {
     $entry->setEntryById($data->EntryId);
 
     http_response_code(200);
-    echo json_encode(array("caption" => $entry->comments, "uploadTimestamp" => $entry->uploadTimestampDisplay()));
+    echo json_encode(array("id" => $entry->id, "caption" => $entry->comments, "uploadTimestamp" => $entry->uploadTimestampDisplay()));
 } catch (Exception $e)
 {
     http_response_code(401);

@@ -22,7 +22,7 @@ $user = new User($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-if ($data) {
+if ($data && isset($data->email) && isset($data->password)) {
     $user->setUserByEmailAddress($data->email);
 
     if ($user->id && $user->validatePassword($data->password)) {
