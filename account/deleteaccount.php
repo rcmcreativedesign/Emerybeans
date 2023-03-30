@@ -3,23 +3,30 @@ require_once '../_authorized.php';
 require_once "../classes/Database.php";
 require_once '../classes/Site.php';
 require_once "../classes/User.php";
+require_once '../classes/Admin.php';
 
 $database = new Database();
 $db = $database->getConnection();
 $site = new Site($db);
 $user = new User($db);
+$admin = new Admin($db);
+
 $user->setUserById($_SESSION["id"]);
 
 $notification = "";
-$del_result = $user->deleteUser();
+if ($admin->getCountOfAdmins() > 1) {
+    $del_result = $user->deleteUser();
 
-if (!$del_result) {
-    $notification = "Unable to delete account";
+    if (!$del_result) {
+        $notification = "Unable to delete account";
+    } else {
+        $_SESSION = array();
+
+        session_destroy();
+        $loggedin = false;
+    }
 } else {
-    $_SESSION = array();
-
-    session_destroy();
-    $loggedin = false;
+    $notification = "Unable to delete account. One admin is required.";
 }
 
 $db->close();

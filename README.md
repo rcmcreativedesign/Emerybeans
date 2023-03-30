@@ -4,7 +4,7 @@ I'm building this site in part to learn PHP.
 
 To configure your site, you will need to update two files in the 'classes' folder: Database.php and Mailer.php. 
 
-Database.php contains the connection information to your MySQL database. You can find the 'CREATE' statements used to set up the tables in your database in the setup.php file. My intention is for setup.php to allow the initial install and configuration, but currently does nothing other than hold the 'CREATE' statements. 
+Database.php contains the connection information to your MySQL database. 
 
 Mailer.php contains the SMTP connection information needed to send emails. Emails are a core component of the application, so you will need to set this up properly.
 

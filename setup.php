@@ -59,7 +59,7 @@
             $newSite->siteName = $siteName;
             $newSite->siteUrl = $siteUrl;
             $newSite->adminEmailAddress = $adminEmailAddress;
-            $newSite->saveSite();
+            $newSite->createSite();
 
             $newUser->createUser($userEmailAddress, $userPassword, $userDisplayName);
             $newUser->enabled = true;
@@ -119,7 +119,7 @@
                 $createQuery = "CREATE TABLE `entrylike` (`id` int(11) NOT NULL AUTO_INCREMENT,`entryId` int(11) NOT NULL,`userId` int(11) NOT NULL,`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY (`id`)) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;";
                 break;
             case "site":
-                $createQuery = "CREATE TABLE `site` (`siteUrl` text NOT NULL, `siteName` text NOT NULL, `adminEmailAddress` text NOT NULL) ENGINE=MyISAM DEFAULT CHARSET=latin1";
+                $createQuery = "CREATE TABLE `site` (`id` int(11) NOT NULL AUTO_INCREMENT,`siteUrl` text NOT NULL, `siteName` text NOT NULL, `adminEmailAddress` text NOT NULL) ENGINE=MyISAM DEFAULT CHARSET=latin1";
                 break;
         }
 
@@ -182,7 +182,7 @@
                         </div>
                         <div class="row form-group">
                             <label class="col-sm-2" for="adminEmailAddress">Admin Email Address:</label>
-                            <div class="col-sm-2">
+                            <div class="col-sm-4">
                                 <input type="text" name="adminEmailAddress" value="<?php echo $adminEmailAddress;?>" class="form-control <?php echo (!empty($adminEmailAddress_err)) ? 'is-invalid' : ''; ?>" />
                                 <span class="invalid-feedback"><?php echo $adminEmailAddress_err; ?></span>
                             </div>
@@ -197,21 +197,21 @@
                     <div class="col-sm-11">
                         <div class="row form-group">
                             <label class="col-sm-2" for="userDisplayName">Display Name:</label>
-                            <div class="col-sm-2">
+                            <div class="col-sm-4">
                                 <input type="text" name="userDisplayName" value="<?php echo $userDisplayName;?>" class="form-control <?php echo (!empty($userDisplayName_err)) ? 'is-invalid' : ''; ?>" />
                                 <span class="invalid-feedback"><?php echo $userDisplayName_err; ?></span>
                             </div>
                         </div>
                         <div class="row form-group">
                             <label class="col-sm-2" for="userEmail">Email Address:</label>
-                            <div class="col-sm-2">
+                            <div class="col-sm-4">
                                 <input type="text" name="userEmailAddress" value="<?php echo $userEmailAddress;?>" class="form-control <?php echo (!empty($userEmailAddress_err)) ? 'is-invalid' : ''; ?>" />
                                 <span class="invalid-feedback"><?php echo $userEmailAddress_err; ?></span>
                             </div>
                         </div>
                         <div class="row form-group">
                             <label class="col-sm-2" for="userPassword">Password:</label>
-                            <div class="col-sm-2">
+                            <div class="col-sm-4">
                                 <input type="password" name="userPassword" value="<?php echo $userPassword;?>" class="form-control <?php echo (!empty($userPassword_err)) ? 'is-invalid' : ''; ?>" />
                                 <span class="invalid-feedback"><?php echo $userPassword_err; ?></span>
                             </div>
@@ -219,7 +219,7 @@
                     </div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-sm-12"><input type="submit" name="submit" value="Submit" /></div>
+                    <div class="col-sm-12"><input class="btn btn-primary" type="submit" name="submit" value="Submit" /></div>
                 </div>
             </form>
             <?php } ?>
