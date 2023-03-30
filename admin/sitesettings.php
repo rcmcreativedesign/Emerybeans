@@ -78,7 +78,7 @@ $db->close();
                     </div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-sm-12"><input class="btn btn-primary" type="submit" name="submit" value="Submit" /></div>
+                    <div class="col-sm-12"><input class="btn btn-primary" type="submit" name="submit" value="Save" /></div>
                 </div>
             </form>
 
